@@ -47,6 +47,7 @@ Added/fixed:
 ============
 (*) CTL-789 Improve property handling in the context of RegisterProperties
 (*) CTL-792 Improve property editing performance
+(*) CTL-828 Prevent unnecessary creation of empty dictionary entries in ModelBase
 
 Roadmap:
 ========
