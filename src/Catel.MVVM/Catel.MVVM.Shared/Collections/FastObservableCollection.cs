@@ -449,6 +449,10 @@ namespace Catel.Collections
                         {
                             eventArgsList.AddRange(_suspensionContext.CreateMixedBashEventArgsList());
                         }
+                        else if (_suspensionContext.Mode == SuspensionMode.MixedConsolidate)
+                        {
+                            eventArgsList.AddRange(_suspensionContext.CreateMixedConsolidateEventArgsList());
+                        }
                     }
                 }
                 else

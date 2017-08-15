@@ -1124,5 +1124,59 @@ namespace Catel.Test.Collections
                 CollectionAssert.AreEqual(sourceCollection, targetCollection);
             }
         }
+
+        [TestFixture]
+        public class TheMixedConsolidateMode
+        {
+            [Test]
+            public void RaisesSingleEventForAddAndRemoveActions()
+            {
+                var eventArgsList = new List<NotifyRangedCollectionChangedEventArgs>();
+                var fastCollection = new FastObservableCollection<int> { };
+                fastCollection.AutomaticallyDispatchChangeNotifications = false;
+                fastCollection.CollectionChanged += (sender, args) => { eventArgsList.Add((NotifyRangedCollectionChangedEventArgs)args); };
+
+                using (fastCollection.SuspendChangeNotifications(SuspensionMode.MixedConsolidate))
+                {
+                    fastCollection.Add(1);
+                    fastCollection.Add(2);
+                    fastCollection.Add(3);
+                    fastCollection.Remove(3);
+                    fastCollection.Remove(2);
+                    fastCollection.Add(2);
+                }
+
+                Assert.AreEqual(1, eventArgsList.Count);
+                Assert.AreEqual(2, eventArgsList[0].ChangedItems.Count);
+                Assert.AreEqual(2, eventArgsList[0].NewItems.Count);
+                Assert.AreEqual(SuspensionMode.MixedConsolidate, eventArgsList[0].SuspensionMode);
+                Assert.AreEqual(NotifyCollectionChangedAction.Add, eventArgsList[0].Action);
+            }
+
+            [Test]
+            public void TargetCollectionAimsSourceCollectionChangesWithAddingAndRemovingItems()
+            {
+                var eventArgsList = new List<NotifyRangedCollectionChangedEventArgs>();
+                var sourceCollection = new FastObservableCollection<int> { };
+                sourceCollection.AutomaticallyDispatchChangeNotifications = false;
+                sourceCollection.CollectionChanged += (sender, args) => { eventArgsList.Add((NotifyRangedCollectionChangedEventArgs)args); };
+
+                using (sourceCollection.SuspendChangeNotifications(SuspensionMode.MixedConsolidate))
+                {
+                    sourceCollection.Add(1);
+                    sourceCollection.Add(2);
+                    sourceCollection.Add(3);
+                    sourceCollection.Remove(3);
+                    sourceCollection.Remove(2);
+                    sourceCollection.Add(2);
+                }
+
+                Assert.AreEqual(1, eventArgsList.Count);
+
+                var targetCollection = new List<int> { };
+                FastObservableCollectionFactsHelper.Synchronize(targetCollection, sourceCollection, eventArgsList);
+                CollectionAssert.AreEqual(sourceCollection, targetCollection);
+            }
+        }
     }
 }

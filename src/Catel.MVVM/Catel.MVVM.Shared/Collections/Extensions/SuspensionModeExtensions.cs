@@ -29,7 +29,8 @@ namespace Catel.Collections.Extensions
             MixedModes = new List<SuspensionMode>
                               {
                                   SuspensionMode.Mixed,
-                                  SuspensionMode.MixedBash
+                                  SuspensionMode.MixedBash,
+                                  SuspensionMode.MixedConsolidate
                               };
         }
         #endregion Constructors
