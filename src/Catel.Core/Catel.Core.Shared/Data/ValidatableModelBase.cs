@@ -484,12 +484,20 @@ namespace Catel.Data
         }
 
         /// <summary>
-        /// Raises the <see cref="E:PropertyChanged" /> event.
+        /// Invoked when a property value has changed.
         /// </summary>
-        /// <param name="e">The <see cref="AdvancedPropertyChangedEventArgs"/> instance containing the event data.</param>
-        protected override void OnPropertyChanged(AdvancedPropertyChangedEventArgs e)
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        /// <param name="updateIsDirty">if set to <c>true</c>, the IsDirty property is set and automatic validation is allowed.</param>
+        /// <param name="isRefreshCallOnly">if set to <c>true</c>, the call is only to refresh updates (for example, for the IDataErrorInfo 
+        /// implementation). If this value is <c>false</c>, the custom change handlers will not be called.</param>
+        /// <returns>XYZ ABC.</returns>
+        protected override bool RaisePropertyChanged(object sender, PropertyChangedEventArgs e, bool updateIsDirty, bool isRefreshCallOnly)
         {
-            base.OnPropertyChanged(e);
+            if (base.RaisePropertyChanged(sender, e, updateIsDirty, isRefreshCallOnly) == false)
+            {
+                return false;
+            }
 
             var propertyName = e.PropertyName;
             if (!string.IsNullOrWhiteSpace(propertyName))
@@ -498,7 +506,7 @@ namespace Catel.Data
                 {
                     if (ignoredProperties.Contains(propertyName))
                     {
-                        return;
+                        return false;
                     }
                 }
             }
@@ -513,7 +521,7 @@ namespace Catel.Data
                     {
                         if (_propertiesCurrentlyBeingValidated.Contains(propertyName))
                         {
-                            return;
+                            return false;
                         }
                     }
 
@@ -522,6 +530,8 @@ namespace Catel.Data
 
                 Validate();
             }
+
+            return AutomaticallyValidateOnPropertyChanged;
         }
 
         /// <summary>

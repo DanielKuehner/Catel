@@ -389,7 +389,8 @@ namespace Catel.Data
         /// <param name="updateIsDirty">if set to <c>true</c>, the <see cref="IsDirty"/> property is set and automatic validation is allowed.</param>
         /// <param name="isRefreshCallOnly">if set to <c>true</c>, the call is only to refresh updates (for example, for the IDataErrorInfo 
         /// implementation). If this value is <c>false</c>, the custom change handlers will not be called.</param>
-        protected void RaisePropertyChanged(object sender, PropertyChangedEventArgs e, bool updateIsDirty, bool isRefreshCallOnly)
+        /// <returns>XYZ ABC.</returns>
+        protected virtual bool RaisePropertyChanged(object sender, PropertyChangedEventArgs e, bool updateIsDirty, bool isRefreshCallOnly)
         {
             if (string.IsNullOrEmpty(e.PropertyName))
             {
@@ -399,7 +400,7 @@ namespace Catel.Data
                     base.RaisePropertyChanged(this, new AdvancedPropertyChangedEventArgs(sender, e.PropertyName));
                 }
 
-                return;
+                return false;
             }
 
             // If this is an internal data object base property, just leave
@@ -414,7 +415,7 @@ namespace Catel.Data
                         if (!ReferenceEquals(this, sender))
                         {
                             // Ignore
-                            return;
+                            return false;
                         }
                     }
 
@@ -433,7 +434,7 @@ namespace Catel.Data
                         }
                     }
 
-                    return;
+                    return false;
                 }
             }
 
@@ -486,6 +487,8 @@ namespace Catel.Data
             {
                 SetDirty(e.PropertyName);
             }
+
+            return updateIsDirty;
         }
 
         /// <summary>
