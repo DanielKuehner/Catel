@@ -11,9 +11,11 @@ namespace Catel.Test.Data
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Windows.Data;
+
     using Catel.Data;
     using Catel.MVVM;
     using Catel.Runtime.Serialization;
+
     using NUnit.Framework;
 
     [TestFixture]
@@ -136,5 +138,76 @@ namespace Catel.Test.Data
         //    Assert.IsFalse(computerSettings.IniFileCollection[0].IniEntryCollection[0].IsDirty);
         //    Assert.IsFalse(computerSettings.IsDirty);
         //}
+
+        public class ChildModel : ValidatableModelBase
+        {
+            public static readonly PropertyData NameProperty = RegisterProperty<ChildModel, string>(model => model.Name);
+
+            public string Name
+            {
+                get => this.GetValue<string>(NameProperty);
+                set => this.SetValue(NameProperty, value);
+            }
+
+            protected override void ValidateBusinessRules(List<IBusinessRuleValidationResult> validationResults)
+            {
+                if (string.IsNullOrWhiteSpace(this.Name))
+                {
+                    validationResults.Add(BusinessRuleValidationResult.CreateError("B: There is no name"));
+                }
+            }
+
+            protected override void ValidateFields(List<IFieldValidationResult> validationResults)
+            {
+                if (string.IsNullOrWhiteSpace(this.Name))
+                {
+                    validationResults.Add(FieldValidationResult.CreateError(nameof(NameProperty), "F: There is no name"));
+                }
+            }
+        }
+
+        public class ParentModel : ChildAwareModelBase
+        {
+            public static readonly PropertyData ChildProperty = RegisterProperty<ParentModel, ChildModel>(model => model.Child);
+
+            public ChildModel Child
+            {
+                get => this.GetValue<ChildModel>(ChildProperty);
+                set => this.SetValue(ChildProperty, value);
+            }
+
+            protected override void ValidateBusinessRules(List<IBusinessRuleValidationResult> validationResults)
+            {
+                if (this.Child != null)
+                {
+                    var errors = this.Child.GetErrorMessage();
+                    if (errors.Length != 0)
+                    {
+                        validationResults.Add(BusinessRuleValidationResult.CreateError(errors));
+                    }
+                }
+            }
+
+            protected override void ValidateFields(List<IFieldValidationResult> validationResults)
+            {
+                if (this.Child == null)
+                {
+                    validationResults.Add(FieldValidationResult.CreateError(nameof(ChildProperty), "F: There is no child"));
+                }
+            }
+        }
+
+        [Test]
+        public void ParentGetsValidatedForChildPropertyChange()
+        {
+            // Setup models
+            var c = new ChildModel();
+            var p = new ParentModel { Child = c };
+
+            // Create error in child
+            c.Name = string.Empty;
+
+            Assert.IsNotEmpty(p.GetErrorMessage());
+        }
     }
 }
