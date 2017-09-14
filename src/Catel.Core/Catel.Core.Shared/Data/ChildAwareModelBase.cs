@@ -189,6 +189,8 @@ namespace Catel.Data
         protected virtual void OnPropertyObjectCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             SetDirty(string.Empty);
+
+            Validate(true);
         }
 
         /// <summary>
@@ -205,6 +207,11 @@ namespace Catel.Data
             }
 
             SetDirty(string.Empty);
+
+            if (IsValidationProperty(e.PropertyName))
+            {
+                Validate(true);
+            }
         }
     }
 }
