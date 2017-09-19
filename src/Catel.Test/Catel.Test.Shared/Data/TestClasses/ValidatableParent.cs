@@ -19,13 +19,14 @@ namespace Catel.Test.Data.TestClasses
             get => GetValue<ValidatableChild>(ChildProperty);
             set => SetValue(ChildProperty, value);
         }
+
+        public static readonly PropertyData ChildProperty = RegisterProperty<ValidatableParent, ValidatableChild>(model => model.Child);
+
         public ObservableCollection<ValidatableChild> Collection
         {
             get => GetValue<ObservableCollection<ValidatableChild>>(CollectionProperty);
             set => SetValue(CollectionProperty, value);
         }
-
-        public static readonly PropertyData ChildProperty = RegisterProperty<ValidatableParent, ValidatableChild>(model => model.Child);
 
         public static readonly PropertyData CollectionProperty = RegisterProperty<ValidatableParent, ObservableCollection<ValidatableChild>>(model => model.Collection);
 

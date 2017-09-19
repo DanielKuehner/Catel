@@ -94,7 +94,7 @@ namespace Catel.Test.Data
         }
 
         [Test]
-        public void ValidatesParentOnPorpertyChanged()
+        public void ValidatesParentOnPropertyChanged()
         {
             var c = new ValidatableChild();
             var p = new ValidatableParent();
