@@ -704,5 +704,38 @@ namespace Catel.Test.Collections
                 }
             }
         }
+
+        [TestFixture]
+        public class TheSilentMode
+        {
+            [Test]
+            public void MultipleActionsInSilentMode()
+            {
+                var counter = 0;
+
+                var fastCollection = new FastObservableCollection<int>();
+                fastCollection.AutomaticallyDispatchChangeNotifications = false;
+                fastCollection.CollectionChanged += (sender, e) => counter++;
+
+                using (fastCollection.SuspendChangeNotifications(SuspensionMode.Silent))
+                {
+                    fastCollection.Add(0);
+                    fastCollection.Add(1);
+
+                    fastCollection.Remove(0);
+                    fastCollection.Remove(1);
+
+                    fastCollection.AddRange(new[] { 1, 2 });
+
+                    fastCollection[0] = 5;
+
+                    fastCollection.Move(0, 1);
+
+                    fastCollection.Clear();
+                }
+
+                Assert.AreEqual(0, counter);
+            }
+        }
     }
 }

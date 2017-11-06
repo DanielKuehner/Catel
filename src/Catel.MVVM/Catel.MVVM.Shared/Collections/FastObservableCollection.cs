@@ -441,6 +441,10 @@ namespace Catel.Collections
                         eventArgs = CreateEventArgs(NotifyCollectionChangedAction.Remove, _suspensionContext.OldItems, _suspensionContext.OldItemIndices);
                     }
                 }
+                else if (_suspensionContext != null && _suspensionContext.Mode == SuspensionMode.Silent)
+                {
+                    // do nothing
+                }
                 else
                 {
                     //Debug.Assert(_suspensionContext != null && _suspensionContext.Mode == SuspensionMode.None, "Wrong/unknown suspension mode!");
@@ -519,9 +523,9 @@ namespace Catel.Collections
         protected override void ClearItems()
         {
             // Check
-            if (_suspensionContext != null && _suspensionContext.Mode != SuspensionMode.None)
+            if (_suspensionContext != null && (_suspensionContext.Mode != SuspensionMode.None && _suspensionContext.Mode != SuspensionMode.Silent))
             {
-                throw Log.ErrorAndCreateException<InvalidOperationException>($"Clearing items is only allowed in SuspensionMode.None, current mode is '{_suspensionContext.Mode}'");
+                throw Log.ErrorAndCreateException<InvalidOperationException>($"Clearing items is only allowed in SuspensionMode.None or SuspensionMode.Silent, current mode is '{_suspensionContext.Mode}'");
             }
 
             // Call base
@@ -559,9 +563,9 @@ namespace Catel.Collections
         protected override void MoveItem(int oldIndex, int newIndex)
         {
             // Check
-            if (_suspensionContext != null && _suspensionContext.Mode != SuspensionMode.None)
+            if (_suspensionContext != null && (_suspensionContext.Mode != SuspensionMode.None && _suspensionContext.Mode != SuspensionMode.Silent))
             {
-                throw Log.ErrorAndCreateException<InvalidOperationException>($"Moving items is only allowed in SuspensionMode.None, current mode is '{_suspensionContext.Mode}'");
+                throw Log.ErrorAndCreateException<InvalidOperationException>($"Moving items is only allowed in SuspensionMode.None or SuspensionMode.Silent, current mode is '{_suspensionContext.Mode}'");
             }
 
             // Call base
@@ -602,9 +606,9 @@ namespace Catel.Collections
         protected override void SetItem(int index, T item)
         {
             // Check
-            if (_suspensionContext != null && _suspensionContext.Mode != SuspensionMode.None)
+            if (_suspensionContext != null && (_suspensionContext.Mode != SuspensionMode.None &&_suspensionContext.Mode != SuspensionMode.Silent))
             {
-                throw Log.ErrorAndCreateException<InvalidOperationException>($"Replacing items is only allowed in SuspensionMode.None, current mode is '{_suspensionContext.Mode}'");
+                throw Log.ErrorAndCreateException<InvalidOperationException>($"Replacing items is only allowed in SuspensionMode.None or SuspensionMode.Silent, current mode is '{_suspensionContext.Mode}'");
             }
 
             // Call base

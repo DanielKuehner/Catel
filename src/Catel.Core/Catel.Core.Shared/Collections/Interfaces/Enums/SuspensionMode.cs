@@ -24,6 +24,11 @@ namespace Catel.Collections
         /// <summary>
         /// The removing.
         /// </summary>
-        Removing
+        Removing,
+
+        /// <summary>
+        /// The silent.
+        /// </summary>
+        Silent
     }
 }
